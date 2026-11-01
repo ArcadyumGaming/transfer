@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download OS.zip</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    text-align: center;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 60px 20px; }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  p { color: #94a3b8; font-size: 15px; line-height: 1.5; }
+  .btn {
+    display: block;
+    margin: 32px auto 16px;
+    padding: 18px 24px;
+    background: #22c55e;
+    color: #052e16;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 10px;
+  }
+  .btn:active { background: #16a34a; }
+  .small { font-size: 13px; }
+  #status { margin-top: 18px; font-size: 14px; color: #94a3b8; min-height: 20px; }
+  a.alt { color: #7dd3fc; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OS.zip</h1>
+  <p>Tap the button to download the file to this device.</p>
+
+  <a id="dl" class="btn" href="OS.zip" download="OS.zip">Download OS.zip</a>
+
+  <div id="status">Checking file...</div>
+
+  <p class="small">
+    Not downloading? Try
+    <a class="alt" href="OS.zip">OS.zip</a> or
+    <a class="alt" href="os.zip">os.zip</a>
+    (long-press the link and choose "Save link").
+  </p>
+</div>
+
+<script>
+(function () {
+  // GitHub Pages is case-sensitive, so check both spellings.
+  var names = ["OS.zip", "os.zip"];
+  var dl = document.getElementById("dl");
+  var status = document.getElementById("status");
+
+  function formatSize(bytes) {
+    if (!bytes) return "";
+    var mb = bytes / 1048576;
+    return mb >= 1 ? mb.toFixed(1) + " MB" : Math.round(bytes / 1024) + " KB";
+  }
+
+  function tryName(i) {
+    if (i >= names.length) {
+      status.innerHTML = "Couldn't confirm the file. Make sure OS.zip is in the same repo as index.html.";
+      return;
+    }
+    var name = names[i];
+    var xhr = new XMLHttpRequest();
+    xhr.open("HEAD", name + "?t=" + new Date().getTime(), true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) {
+        dl.href = name;
+        dl.setAttribute("download", name);
+        dl.innerHTML = "Download " + name;
+        var size = formatSize(parseInt(xhr.getResponseHeader("Content-Length"), 10));
+        status.innerHTML = "Ready" + (size ? " (" + size + ")" : "") + ".";
+      } else {
+        tryName(i + 1);
+      }
+    };
+    try { xhr.send(); } catch (e) { tryName(i + 1); }
+  }
+
+  tryName(0);
+})();
+</script>
+</body>
+</html>
